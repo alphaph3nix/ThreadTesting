@@ -1,4 +1,3 @@
-# scp.py
 import os
 import logging
 from pynetdicom import AE, evt, AllStoragePresentationContexts
@@ -11,9 +10,8 @@ if not os.path.exists(STORE_DIRECTORY):
     os.makedirs(STORE_DIRECTORY)
 
 # Configure logging
-logging.basicConfig(filename='scp.log', level=logging.INFO,  # Changed to DEBUG level
-                    format='%(asctime)s %(levelname)s %(message)s')
-logger = logging.getLogger(__name__)
+logging.basicConfig(filename='scp.log', level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger('SCP_Logger')
 
 def handle_store(event):
     """Handle a C-STORE request."""
@@ -39,8 +37,6 @@ ae = AE()
 # Add supported presentation contexts
 ae.supported_contexts = AllStoragePresentationContexts
 
-# Set the maximum number of concurrent associations
-# ae.maximum_associations = 2
-
 # Start SCP on port 11112
+logger.info("Starting DICOM SCP on port 11112")
 ae.start_server(('localhost', 11112), evt_handlers=handlers)

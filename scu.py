@@ -1,13 +1,11 @@
-# scu.py
 import os
 import sys
 import time
 from pydicom import dcmread
 from pynetdicom import AE, StoragePresentationContexts
-from pynetdicom.sop_class import CTImageStorage
+from logger import scu_logger  # Import the custom logger
 
-
-MAX_RETRIES = 20
+MAX_RETRIES = 1
 RETRY_DELAY = 2  # seconds
 
 def send_c_store(dcm_file, scu_id, aet):
@@ -27,23 +25,28 @@ def send_c_store(dcm_file, scu_id, aet):
 
                 if status:
                     print(f"SCU {scu_id}: C-STORE request status: 0x{status.Status:04x}")
+                    scu_logger.info(f'"{aet}" : <- C-STORE request accepted with status: 0x{status.Status:04x}')
                 else:
                     print(f"SCU {scu_id}: Connection timed out, was aborted or received invalid response")
+                    scu_logger.error(f'"{aet}": Connection timed out, was aborted or received invalid response')
 
                 # Release the association
                 assoc.release()
                 return
             else:
                 print(f"SCU {scu_id}: Association rejected, aborted or never connected")
+                scu_logger.error(f'"{aet}": Association rejected, aborted or never connected')
 
-        except :
-            print(f"SCU {scu_id}: Association was rejected, retrying in {RETRY_DELAY} seconds...")
+        except Exception as e:
+            print(f"SCU {scu_id}: Association was rejected, retrying in {RETRY_DELAY} seconds... Error: {e}")
+            scu_logger.error(f'"{aet}": Association was rejected, retrying in {RETRY_DELAY} seconds... Error: {e}')
         
         # Increment the retry count and wait before retrying
         retries += 1
         time.sleep(RETRY_DELAY)
 
     print(f"SCU {scu_id}: Failed to establish association after {MAX_RETRIES} retries")
+    scu_logger.error(f'SCU {scu_id}: Failed to establish association after {MAX_RETRIES} retries')
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:

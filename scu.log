@@ -1,0 +1,10 @@
+2024-07-29 14:28:45,160 - scu_logger - INFO - "scu4" : <- C-STORE request accepted with status: 0x0000
+2024-07-29 14:28:45,199 - scu_logger - INFO - "scu1" : <- C-STORE request accepted with status: 0x0000
+2024-07-29 14:28:45,211 - scu_logger - INFO - "scu6" : <- C-STORE request accepted with status: 0x0000
+2024-07-29 14:28:45,253 - scu_logger - INFO - "scu2" : <- C-STORE request accepted with status: 0x0000
+2024-07-29 14:28:45,253 - scu_logger - INFO - "scu0" : <- C-STORE request accepted with status: 0x0000
+2024-07-29 14:28:45,293 - scu_logger - INFO - "scu7" : <- C-STORE request accepted with status: 0x0000
+2024-07-29 14:28:45,300 - scu_logger - INFO - "scu5" : <- C-STORE request accepted with status: 0x0000
+2024-07-29 14:28:45,305 - scu_logger - INFO - "scu3" : <- C-STORE request accepted with status: 0x0000
+2024-07-29 14:28:45,307 - scu_logger - INFO - "scu9" : <- C-STORE request accepted with status: 0x0000
+2024-07-29 14:28:45,331 - scu_logger - INFO - "scu8" : <- C-STORE request accepted with status: 0x0000

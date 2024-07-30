@@ -1,6 +1,8 @@
 import os
 import logging
+from logger_config import scp_logger
 from pynetdicom import AE, evt, AllStoragePresentationContexts
+ #for logger = logging.getLogger('scp_logger') to work
 
 # Directory to store received DICOM files
 STORE_DIRECTORY = 'DCM_Saved'
@@ -10,22 +12,26 @@ if not os.path.exists(STORE_DIRECTORY):
     os.makedirs(STORE_DIRECTORY)
 
 # Configure logging
-logging.basicConfig(filename='scp.log', level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger('SCP_Logger')
+logging.basicConfig(filename='pynet_scp.log', level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+scp_logger.info("********************************************************************************************************************************************************")
+logging.info("********************************************************************************************************************************************************")
 
 def handle_store(event):
     """Handle a C-STORE request."""
     ds = event.dataset
     ds.file_meta = event.file_meta
-    aet = event.assoc.requestor.ae_title
+    calling_aet = event.assoc.requestor.ae_title.strip()
+    calling_ip = event.assoc.requestor.address.strip()
+    scp_logger.info(f" SCP: Received C-ECHO request from (\"{calling_aet}\" at { calling_ip})")
     
     # Create a unique filename based on SOP Instance UID and AET
-    filename = f"{aet}_{ds.SOPInstanceUID}.dcm"
+    filename = f"{calling_aet}_{ds.SOPInstanceUID}.dcm"
     filepath = os.path.join(STORE_DIRECTORY, filename)
 
     # Save the DICOM file
     ds.save_as(filepath, write_like_original=False)
-    logger.info(f"Stored DICOM file: {filepath}")
+    scp_logger.info(f"Stored DICOM file: {filepath}")
+    
     
     return 0x0000  # Success status
 
@@ -38,5 +44,7 @@ ae = AE()
 ae.supported_contexts = AllStoragePresentationContexts
 
 # Start SCP on port 11112
-logger.info("Starting DICOM SCP on port 11112")
+scp_logger.info("Starting DICOM SCP on port 11112")
+logging.info("Starting DICOM SCP on port 11112")
+
 ae.start_server(('localhost', 11112), evt_handlers=handlers)

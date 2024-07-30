@@ -1,14 +1,18 @@
+import logging
 import os
 import sys
 import time
 from pydicom import dcmread
 from pynetdicom import AE, StoragePresentationContexts
-from logger import scu_logger  # Import the custom logger
+from logger_config import scu_logger
 
 MAX_RETRIES = 1
 RETRY_DELAY = 2  # seconds
 
+
 def send_c_store(dcm_file, scu_id, aet):
+    logging.basicConfig(filename='pynet_scu.log', level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
     ae = AE(ae_title=aet)
     ae.requested_contexts = StoragePresentationContexts
 

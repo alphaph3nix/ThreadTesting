@@ -7,6 +7,7 @@ scp_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(me
 scp_handler.setFormatter(scp_formatter)
 scp_logger.addHandler(scp_handler)
 scp_logger.setLevel(logging.INFO)
+scp_logger.propagate=False
 
 # Set up SCU logger
 scu_logger = logging.getLogger('scu_logger')
@@ -15,3 +16,7 @@ scu_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(me
 scu_handler.setFormatter(scu_formatter)
 scu_logger.addHandler(scu_handler)
 scu_logger.setLevel(logging.INFO)
+scu_logger.propagate=False
+
+
+

@@ -1,1 +1,3 @@
-/scp.log
+*.log
+__pycache__/
+DCM_Saved/

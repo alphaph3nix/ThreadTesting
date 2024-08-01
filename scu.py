@@ -18,7 +18,7 @@ def send_c_store(dcm_file, scu_id, aet,number_of_store):
     # while retries < MAX_RETRIES:
     try:
         # Establish association with SCP
-        assoc = ae.associate('192.168.1.230', 105,ae_title="yeah")
+        assoc = ae.associate('127.0.0.1', 11112)
 
         if assoc.is_established:
             for i in range(number_of_stores):

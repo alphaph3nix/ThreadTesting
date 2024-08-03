@@ -8,7 +8,7 @@ from logger_config import scu_logger
 
 MAX_RETRIES = 1
 RETRY_DELAY = 2  # seconds
-logging.basicConfig(filename='pynet_scu.log', level=logging.ERROR, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(filename='pynet_scu.log', level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 def send_c_store(dcm_file, scu_id, aet,number_of_store):
     ae = AE(ae_title=aet)
@@ -18,7 +18,9 @@ def send_c_store(dcm_file, scu_id, aet,number_of_store):
     # while retries < MAX_RETRIES:
     try:
         # Establish association with SCP
-        assoc = ae.associate('127.0.0.1', 11112)
+        assoc = ae.associate('127.0.0.1', 11112,ae_title="OUR_SCP_AET")
+        print(f'assoc.is_established: {assoc.is_established}')
+        print(f'assoc.is_rejected: {assoc.is_rejected}')
 
         if assoc.is_established:
             for i in range(number_of_stores):

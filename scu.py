@@ -10,7 +10,7 @@ MAX_RETRIES = 1
 RETRY_DELAY = 2  # seconds
 logging.basicConfig(filename='pynet_scu.log', level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-def send_c_store(dcm_file, scu_id, aet,number_of_store):
+def send_c_store(dcm_file, scu_id, aet,number_of_stores):
     ae = AE(ae_title=aet)
     ae.requested_contexts = StoragePresentationContexts
 

@@ -6,7 +6,7 @@ import pydicom
 
 
 # Define the DICOM file to send
-dcm_file = os.path.join(os.path.dirname(__file__), '..', 'DCM\\0020.DCM') 
+dcm_file = os.path.join(os.path.dirname(__file__), '..', 'DCM\\0015.DCM') 
 
 def run_scu(scu_id,number_of_stores):
     result = subprocess.run(['python', 'scu.py', dcm_file, str(scu_id), f'scu{scu_id}',str(number_of_stores)], capture_output=True, text=True)
@@ -15,10 +15,9 @@ def run_scu(scu_id,number_of_stores):
 if __name__ == "__main__":
     scu_logger.info("********************************************************************************************************************************************************")
     data=pydicom.dcmread(dcm_file)
-    print(type(data))
-    print('NumberOfFrames' in data)
+    # print(type(data))
+    # print('NumberOfFrames' in data)
     
-    print( data.NumberOfFrames)
 
     max_scu = 1
     number_of_stores=1

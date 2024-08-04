@@ -33,11 +33,11 @@ handlers = [
     (evt.EVT_REQUESTED, handle_association_requested)  # Ensure EVT_REQUESTED is registered
 ]
 
-logger_store.info("yessssssss")
-ae_scp_c_store = AE(ae_title="scp_c_store")
-ae_scp_c_store.supported_contexts = AllStoragePresentationContexts
-ae_scp_c_store.start_server(('localhost', 11112), block=False, evt_handlers=[handlers[0]])
-ae_scp_c_store._require_called_aet=True
+
+# ae_scp_c_store = AE(ae_title="scp_c_store")
+# ae_scp_c_store.supported_contexts = AllStoragePresentationContexts
+# ae_scp_c_store.start_server(('localhost', 11112), block=False, evt_handlers=[handlers[0]])
+
 
 # ae_scp_c_echo = AE(ae_title="scp_c_echo")
 # ae_scp_c_echo.supported_contexts = VerificationPresentationContexts
@@ -58,4 +58,4 @@ ae.supported_contexts = AllStoragePresentationContexts + VerificationPresentatio
 
 # ae.require_calling_aet
 ae.start_server(('127.0.0.1', 11112), block=False, evt_handlers=handlers)
-input("type to exist")
+input("type to exist\n")

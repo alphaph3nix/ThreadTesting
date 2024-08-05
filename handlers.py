@@ -12,6 +12,22 @@ if not os.path.exists(STORE_DIRECTORY):
 
 def handle_association_requested(event):
     print("handle assoc")
+    # # print_contexts(event)
+    # print(f'{event.assoc.acse.acceptor._address}\n')
+
+    # print(f'{event.assoc.acse.requestor._address}\n')
+
+    # print(check_requestor_contexts_in_acceptor_contexts(event.assoc.requestor.requested_contexts,event.assoc.acceptor.supported_contexts))
+    # print(event.assoc.requestor.supported_contexts)
+    
+
+        # if context.abstract_syntax == Verification:
+        #     delegate_to_echo_scp(event)
+        #     return
+        # elif context.abstract_syntax == CTImageStorage:
+        #     delegate_to_store_scp(event)
+        #     return
+    # event.assoc.acse.send_reject(0x01,0x01,0x03)
     # # event.assoc.acse.send_reject(0x01,0x01,0x03)
     # """Handle an association request event."""
     # calling_aet = event.assoc.requestor.ae_title  # The AE title of the SCU
@@ -65,4 +81,22 @@ def handle_store(event):
     scp_logger.info(f"Stored DICOM file: {filepath}")
 
     return 0x0000  # Success status
+
+# usefull functions
+def print_contexts(event):
+    print('scu contexts') 
+    print(event.assoc.requestor.requested_contexts)
+    # for context in event.assoc.requestor.requested_contexts:
+    #     print(context)
+    print('********************************\n********************************\n********************************') 
+    print(event.assoc.acceptor.supported_contexts)
+    # print('scp contexts') 
+    # for context in event.assoc.acceptor.supported_contexts:
+    #     print(context)
+
+def check_requestor_contexts_in_acceptor_contexts(A, B):
+    set_B = set(B)  # Convert B to a set for fast lookup
+    return all(element in set_B for element in A)
+
+
 

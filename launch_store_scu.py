@@ -6,7 +6,7 @@ import pydicom
 
 
 # Define the DICOM file to send
-dcm_file = os.path.join(os.path.dirname(__file__), '..', 'DCM\\0015_0.DCM') 
+dcm_file = os.path.join(os.path.dirname(__file__), '..', 'DCM\\0015.DCM') 
 
 def run_scu(scu_id,number_of_stores):
     result = subprocess.run(['python', 'store_scu.py', dcm_file, str(scu_id), f'scu{scu_id}',str(number_of_stores)], capture_output=True, text=True)

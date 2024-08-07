@@ -2,7 +2,7 @@
 import os
 import logging
 from logger_config import scp_logger
-
+from pydicom.dataset import Dataset
 
 # Base directory to store received DICOM files
 STORE_DIRECTORY = 'DCM_Saved'
@@ -11,7 +11,7 @@ if not os.path.exists(STORE_DIRECTORY):
     os.makedirs(STORE_DIRECTORY)
 
 def handle_association_requested(event):
-    print("handle assoc")
+    print("association handler called")
     # # print_contexts(event)
     # print(f'{event.assoc.acse.acceptor._address}\n')
 
@@ -54,13 +54,13 @@ def handle_association_requested(event):
     # scp_logger.info(f"Association accepted from {calling_aet} to {called_aet}")
 
 def handle_echo(event):
-    print("handle echo")
+    print("echo handler called")
     return 0x0000
 
 def handle_store(event):
     """Handle a C-STORE request."""
     # print(event.assoc.requestor.mode)                                                                                                             
-    print("handle store")
+    print("store handler called")
     ds = event.dataset
     ds.file_meta = event.file_meta
     calling_aet = event.assoc.requestor.ae_title.strip()
@@ -82,6 +82,32 @@ def handle_store(event):
 
     return 0x0000  # Success status
 
+def handle_n_action(event):
+    print("N-ACTION handler called")
+    ds = event.action_information
+    print(f"Received N-ACTION request from SCU: {ds}")
+
+    # Construct the N-EVENT-REPORT dataset
+    event_report_ds = Dataset()
+    event_report_ds.TransactionUID = ds.TransactionUID
+    event_report_ds.ReferencedSOPSequence = ds.ReferencedSOPSequence
+    event_report_ds.EventTypeID = 1  # Success
+
+    return 0x0000, event_report_ds
+    # is_stored = True  # Simuler que l'image a été stockée avec succès
+    # ds= event.dataset
+    # # Créer une réponse N-EVENT-REPORT
+    # response_ds = Dataset()
+    # response_ds.ReferencedSOPClassUID = ds.ReferencedSOPClassUID
+    # response_ds.ReferencedSOPInstanceUID = ds.ReferencedSOPInstanceUID
+
+    # if is_stored:
+    #     print("Instance stockée avec succès.")
+    #     return (0x0000, response_ds)  # OK
+    # else:
+    #     print("Échec du stockage de l'instance.")
+    #     return (0x0110, response_ds)  # Échec
+
 # usefull functions
 def print_contexts(event):
     print('scu contexts') 
@@ -97,6 +123,5 @@ def print_contexts(event):
 def check_requestor_contexts_in_acceptor_contexts(A, B):
     set_B = set(B)  # Convert B to a set for fast lookup
     return all(element in set_B for element in A)
-
 
 

@@ -15,7 +15,7 @@ def handle_n_event_report(event):
     scu_logger.info('Received Storage Commitment N-EVENT-REPORT')
     scu_logger.info(f'N-EVENT-REPORT dataset: {event_report_ds}')
 
-def send_n_action(dcm_file):
+def send_n_action(dcm_files):
     ae = AE()
     ae.requested_contexts = StorageCommitmentPresentationContexts
 
@@ -28,21 +28,27 @@ def send_n_action(dcm_file):
         print(f'assoc.is_established: {assoc.is_established}')
         print(f'assoc.is_rejected: {assoc.is_rejected}')
         if assoc.is_established:
-            dataset = dcmread(dcm_file)
 
             action_ds = Dataset()
             action_ds.TransactionUID = "1.2.3"
-            action_ds.ReferencedSOPSequence = [Dataset()]
-            action_ds.ReferencedSOPSequence[0].ReferencedSOPClassUID = dataset.SOPClassUID
-            action_ds.ReferencedSOPSequence[0].ReferencedSOPInstanceUID = dataset.SOPInstanceUID
-            action_ds.ActionTypeID = 1  # Action Type ID can be adjusted as needed
+            action_ds.ReferencedSOPSequence = []
+
+            # Iterate through each DICOM file and add the relevant SOP info to the sequence
+            for dcm_file in dcm_files:
+                dataset = dcmread(dcm_file)
+                sop_item = Dataset()
+                sop_item.ReferencedSOPClassUID = dataset.SOPClassUID
+                sop_item.ReferencedSOPInstanceUID = dataset.SOPInstanceUID
+                action_ds.ReferencedSOPSequence.append(sop_item)
+
+            action_ds.ActionTypeID = 1  # Action Type ID for Storage Commitment
 
             # Send N-ACTION request
             status = assoc.send_n_action(
                 action_ds,
                 action_type=action_ds.ActionTypeID,
                 class_uid=StorageCommitmentPushModel,
-                instance_uid=dataset.SOPInstanceUID
+                instance_uid=action_ds.TransactionUID  # Using Transaction UID as the instance UID
             )
 
             # Check if status is a Dataset or tuple
@@ -54,8 +60,7 @@ def send_n_action(dcm_file):
                 print(f"Received status as tuple:\n")
                 scu_logger.info(f'Received status as tuple: {status}')
                 for element in status:
-                    print(f'element:\n {element}')
-
+                    print(f'element({type(element)}):\n {element}')
             else:
                 print("Unknown response type")
                 scu_logger.error('Unknown response type')
@@ -71,5 +76,7 @@ def send_n_action(dcm_file):
         scu_logger.error(f'Error: {e}')
 
 if __name__ == "__main__":
-    dcm_file = os.path.join(os.path.dirname(__file__), '..', 'DCM', '0015.DCM')
-    send_n_action(dcm_file)
+    dcm_files=[]
+    dcm_files.append(os.path.join(os.path.dirname(__file__), '..', 'DCM', '0015_0.DCM'))
+    dcm_files.append(os.path.join(os.path.dirname(__file__), '..', 'DCM', '0009.DCM'))
+    send_n_action(dcm_files)

@@ -19,7 +19,8 @@ def send_c_store(dcm_file, scu_id, aet,number_of_stores):
     while True:
         try:
             # Establish association with SCP
-            assoc = ae.associate('127.0.0.1',11112,ae_title="test")
+            # assoc = ae.associate('127.0.0.1',11112,ae_title="test")
+            assoc = ae.associate('192.168.1.230', 105, ae_title="test")
             print(f'assoc.is_established: {assoc.is_established}')
             print(f'assoc.is_rejected: {assoc.is_rejected}')
             if assoc.is_established:

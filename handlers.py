@@ -3,6 +3,7 @@ import os
 import logging
 from logger_config import scp_logger
 from pydicom.dataset import Dataset
+from pynetdicom.sop_class import StorageCommitmentPushModel
 
 # Base directory to store received DICOM files
 STORE_DIRECTORY = 'DCM_Saved'
@@ -87,13 +88,52 @@ def handle_n_action(event):
     ds = event.action_information
     print(f"Received N-ACTION request from SCU: {ds}")
 
-    # Construct the N-EVENT-REPORT dataset
+    # Initialize the response dataset
     event_report_ds = Dataset()
     event_report_ds.TransactionUID = ds.TransactionUID
-    event_report_ds.ReferencedSOPSequence = ds.ReferencedSOPSequence
-    event_report_ds.EventTypeID = 1  # Success
+    event_report_ds.ReferencedSOPSequence = []
+    event_report_ds.FailedSOPSequence = []
 
-    return (0x0000, event_report_ds)
+    # Iterate through the SOP Sequence
+    for ref_sop in ds.ReferencedSOPSequence:
+        sop_class_uid = ref_sop.ReferencedSOPClassUID
+        sop_instance_uid = ref_sop.ReferencedSOPInstanceUID
+
+        # Check if the instance is stored
+        if is_instance_stored(sop_class_uid, sop_instance_uid):
+            # Create a response entry for this SOP instance
+            ref_sop_response = Dataset()
+            ref_sop_response.ReferencedSOPClassUID = sop_class_uid
+            ref_sop_response.ReferencedSOPInstanceUID = sop_instance_uid
+
+            # Append to the response sequence
+            event_report_ds.ReferencedSOPSequence.append(ref_sop_response)
+        else:
+            ref_sop_response = Dataset()
+            ref_sop_response.ReferencedSOPClassUID=sop_class_uid
+            ref_sop_response.ReferencedSOPInstanceUID=sop_instance_uid
+            event_report_ds.FailedSOPSequence.append(ref_sop_response)
+            print(f"SOP Instance not found: {sop_instance_uid}")
+            # ref_sop_response.FailedSOPClassUID=sop_class_uid
+            # ref_sop_response.FailedSOPInstanceUID=sop_instance_uid
+            # Optionally, you could log or take action if an instance is not found
+
+    # Set a successful status if at least one SOP instance is included
+    event_report_ds.EventTypeID = 1  # Assuming success if we have valid SOPs
+
+    # If no SOPs are valid, you might want to return a failure status
+    # if not event_report_ds.ReferencedSOPSequence:
+    #     return 0xC000, None  # Failure status code
+    
+    response_status = event.assoc.send_n_event_report(
+        event_report_ds, 
+        event_type=ds.ActionTypeID,
+        class_uid=StorageCommitmentPushModel,
+        instance_uid=ds.TransactionUID # Event Type ID (1 for successful storage)
+    )
+    print("//////////////////////////////////////////////")
+    print (event_report_ds)
+    return 0x0000, event_report_ds
     # is_stored = True  # Simuler que l'image a été stockée avec succès
     # ds= event.dataset
     # # Créer une réponse N-EVENT-REPORT
@@ -124,4 +164,19 @@ def check_requestor_contexts_in_acceptor_contexts(A, B):
     set_B = set(B)  # Convert B to a set for fast lookup
     return all(element in set_B for element in A)
 
+def is_instance_stored(sop_class_uid, sop_instance_uid):
+    """
+    Placeholder function to check if a given SOP Instance is stored.
+    You should implement this logic based on your storage system.
+    """
+    # Implement your logic here to verify if the instance is stored
+    # For example, querying a database or checking a file system
+    # if sop_instance_uid=='1.3.12.2.1107.5.4.3.11540117440512.19970422.140030.6': return False 
+        
+    if sop_instance_uid=='1.2.826.0.1.3680043.2000000.240117113116.72': return False
+         
 
+
+    # Placeholder return value, assuming the instance is always stored
+    # Replace this with actual check logic
+    return True

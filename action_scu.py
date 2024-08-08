@@ -46,12 +46,16 @@ def send_n_action(dcm_file):
             )
 
             # Check if status is a Dataset or tuple
+            print(f'type of status : {type(status)}\n')
             if isinstance(status, Dataset):
                 print(f"Storage Commitment request status: 0x{status.Status:04x}")
                 scu_logger.info(f'Storage Commitment request status: 0x{status.Status:04x}')
             elif isinstance(status, tuple):
-                print(f"Received status as tuple: {status}")
+                print(f"Received status as tuple:\n")
                 scu_logger.info(f'Received status as tuple: {status}')
+                for element in status:
+                    print(f'element:\n {element}')
+
             else:
                 print("Unknown response type")
                 scu_logger.error('Unknown response type')

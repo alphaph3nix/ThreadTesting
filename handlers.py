@@ -93,7 +93,7 @@ def handle_n_action(event):
     event_report_ds.ReferencedSOPSequence = ds.ReferencedSOPSequence
     event_report_ds.EventTypeID = 1  # Success
 
-    return 0x0000, event_report_ds
+    return (0x0000, event_report_ds)
     # is_stored = True  # Simuler que l'image a été stockée avec succès
     # ds= event.dataset
     # # Créer une réponse N-EVENT-REPORT

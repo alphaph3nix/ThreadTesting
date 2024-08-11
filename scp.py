@@ -23,8 +23,8 @@ ae = AE(ae_title="test")
 ae.supported_contexts = AllStoragePresentationContexts + VerificationPresentationContexts + StorageCommitmentPresentationContexts
 # ae._require_called_aet=True
 # ae._require_calling_aet=["ORTHANC"]
-ae.start_server(('127.0.0.1', 11112), block=False, evt_handlers=handlers)
-# ae.start_server(('192.168.1.34', 104), block=False, evt_handlers=handlers)
+# ae.start_server(('127.0.0.1', 11112), block=False, evt_handlers=handlers)
+ae.start_server(('192.168.1.34', 104), block=False, evt_handlers=handlers)
 logging.info("Starting DICOM SCP on port 11112")
 print("Starting DICOM SCP on port 11112")
 input("type to exist\n")

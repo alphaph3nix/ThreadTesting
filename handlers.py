@@ -114,10 +114,8 @@ def handle_n_action(event):
             ref_sop_response.ReferencedSOPInstanceUID=sop_instance_uid
             event_report_ds.FailedSOPSequence.append(ref_sop_response)
             print(f"SOP Instance not found: {sop_instance_uid}")
-            # ref_sop_response.FailedSOPClassUID=sop_class_uid
-            # ref_sop_response.FailedSOPInstanceUID=sop_instance_uid
-            # Optionally, you could log or take action if an instance is not found
 
+            # Optionally, you could log or take action if an instance is not found
     # Set a successful status if at least one SOP instance is included
     event_report_ds.EventTypeID = 1  # Assuming success if we have valid SOPs
 
@@ -125,28 +123,13 @@ def handle_n_action(event):
     # if not event_report_ds.ReferencedSOPSequence:
     #     return 0xC000, None  # Failure status code
     
-    response_status = event.assoc.send_n_event_report(
-        event_report_ds, 
-        event_type=ds.ActionTypeID,
-        class_uid=StorageCommitmentPushModel,
-        instance_uid=ds.TransactionUID # Event Type ID (1 for successful storage)
-    )
     print("//////////////////////////////////////////////")
     print (event_report_ds)
-    return 0x0000, event_report_ds
-    # is_stored = True  # Simuler que l'image a été stockée avec succès
-    # ds= event.dataset
-    # # Créer une réponse N-EVENT-REPORT
-    # response_ds = Dataset()
-    # response_ds.ReferencedSOPClassUID = ds.ReferencedSOPClassUID
-    # response_ds.ReferencedSOPInstanceUID = ds.ReferencedSOPInstanceUID
-
-    # if is_stored:
-    #     print("Instance stockée avec succès.")
-    #     return (0x0000, response_ds)  # OK
-    # else:
-    #     print("Échec du stockage de l'instance.")
-    #     return (0x0110, response_ds)  # Échec
+    if event_report_ds.FailedSOPSequence:
+        return 0x0112, event_report_ds           # No such SOP Instance 
+    else:
+        return 0x0000, event_report_ds           #Successful operation
+    
 
 # usefull functions
 def print_contexts(event):
@@ -171,9 +154,9 @@ def is_instance_stored(sop_class_uid, sop_instance_uid):
     """
     # Implement your logic here to verify if the instance is stored
     # For example, querying a database or checking a file system
-    # if sop_instance_uid=='1.3.12.2.1107.5.4.3.11540117440512.19970422.140030.6': return False 
+    # if sop_instance_uid=='1.3.12.2.1107.5.4.3.11540117440512.19970422.140030.6': return False    #for local 
         
-    if sop_instance_uid=='1.2.826.0.1.3680043.2000000.240117113116.72': return False
+    # if sop_instance_uid=='1.2.826.0.1.3680043.2000000.240117113116.72': return False           #for sdc
          
 
 

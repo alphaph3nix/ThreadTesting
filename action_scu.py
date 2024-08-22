@@ -8,7 +8,7 @@ from logger_config import scu_logger
 
 logging.basicConfig(filename='pynet_scu.log', level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-def handle_n_event_report(event):
+def handle_n_event_report(event):  #ingone this for now 
     """Handle an N-EVENT-REPORT request from the SCP."""
     event_report_ds = event.dataset
     print('Received Storage Commitment N-EVENT-REPORT')
@@ -16,14 +16,14 @@ def handle_n_event_report(event):
     scu_logger.info(f'N-EVENT-REPORT dataset: {event_report_ds}')
 
 def send_n_action(dcm_files):
-    ae = AE()
+    ae = AE(ae_title="SCU_ACTION")
     ae.requested_contexts = StorageCommitmentPresentationContexts
 
     handlers = [(evt.EVT_N_EVENT_REPORT, handle_n_event_report)]
 
     try:
         # Establish association with SCP
-        assoc = ae.associate('127.0.0.1', 11112, ae_title="test", evt_handlers=handlers)
+        assoc = ae.associate('127.0.0.1', 109, ae_title="test", evt_handlers=handlers)
         # assoc = ae.associate('192.168.1.230', 105, ae_title="test", evt_handlers=handlers)
         print(f'assoc.is_established: {assoc.is_established}')
         print(f'assoc.is_rejected: {assoc.is_rejected}')

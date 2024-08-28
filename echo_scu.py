@@ -1,21 +1,36 @@
-import subprocess
-from logger_config import debug_logger
-import logging 
+from pynetdicom import AE, evt, VerificationPresentationContexts,debug_logger
+from pynetdicom import build_context
 
-logging.basicConfig(filename='echo_scu.log', level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-# debug_logger()
+def send_c_echo(aet,addr,port,aec):
+    debug_logger()
+    ae = AE(ae_title=aet)
+    cx = build_context('1.2.840.10008.1.1', ['1.2.840.10008.1.2'])        #Abstract Syntax: 1.2.840.10008.1.1(Verification SOP Class) /// Transfer Syntax: 1.2.840.10008.1.2 (Implicit VR Little Endian) 
+    # ae.requested_contexts = VerificationPresentationContexts
+    ae.requested_contexts= [cx]
 
-def send_cecho():
-    
-    addr = '127.0.0.1'
-    port = 104
-    aec = 'PACS'  #called aet (aet of scp)
-    # Adding verbose and debug flags to the command
-    command = ['python', '-m', 'pynetdicom', 'echoscu', '-ll', 'info', '-aec', aec, addr, str(port)]
+    try:
+        # Establish Association
+        assoc = ae.associate(addr=addr,port=port,ae_title=aec)
+        status=None
 
-    result = subprocess.run(command, capture_output=True, text=True)
-    logging.info(result)
-    print(result)
+        if assoc.is_established:
+            print(f'sending c echo to {addr}:{port} with AET={aec} ')
+            status = assoc.send_c_echo()
+            # Release the association
+            assoc.release()
+
+    except Exception as e:
+        print(e)
+
+    print(status)
+  
+
+
 
 if __name__ == "__main__":
-    send_cecho()
+    # send_c_echo('127.0.0.1',104,'PACS' )
+    send_c_echo("CALLING_AE",'127.0.0.1',104,'CALLED_AE' )
+    # send_c_echo('127.0.0.1',105,'PACS' )
+    # send_c_echo('127.0.0.1',106,'PACS' )
+    
+    

@@ -1,15 +1,15 @@
 import logging
 
 #function to config loggers
-def configure_logger(name, filename):
-    logger = logging.getLogger(name)
-    logger.setLevel(logging.DEBUG)
-    if not logger.handlers:
-        file_handler = logging.FileHandler(filename)
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        file_handler.setFormatter(formatter)
-        logger.addHandler(file_handler)
-    return logger
+# def configure_logger(name, filename):
+#     logger = logging.getLogger(name)
+#     logger.setLevel(logging.DEBUG)
+#     if not logger.handlers:
+#         file_handler = logging.FileHandler(filename)
+#         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+#         file_handler.setFormatter(formatter)
+#         logger.addHandler(file_handler)
+#     return logger
 
 # Set up SCP logger
 scp_logger = logging.getLogger('scp_logger')
@@ -28,6 +28,22 @@ scu_handler.setFormatter(scu_formatter)
 scu_logger.addHandler(scu_handler)
 scu_logger.setLevel(logging.INFO)
 scu_logger.propagate=False
+
+
+def debug_logger() -> None:
+    """Setup the logging for debugging."""
+    logger = logging.getLogger("pynetdicom")
+    # Ensure only have one StreamHandler
+    logger.handlers = []
+    handler = logging.StreamHandler()
+    file_handler = logging.FileHandler('wtf_scu.log')
+    logger.setLevel(logging.DEBUG)
+    formatter = logging.Formatter("%(levelname).1s: %(message)s")
+    handler.setFormatter(formatter)
+    # logger.addHandler(handler)
+    logger.addHandler(file_handler)
+
+
 
 
 # # later add all pynetloggers if i want to not log on root logger (without )
